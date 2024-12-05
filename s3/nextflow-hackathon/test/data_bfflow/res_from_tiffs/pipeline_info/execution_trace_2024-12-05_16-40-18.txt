@@ -1,0 +1,2 @@
+task_id	hash	native_id	name	status	exit	submit	duration	realtime	%cpu	peak_rss	peak_vmem	rchar	wchar
+1	c7/2cedfd	9681378	BATCHCONVERT_TO_OMETIFF:BFCONVERT (example)	COMPLETED	0	2024-12-05 16:40:31.700	8.6s	4s	72.9%	171.9 MB	3 GB	38.4 MB	1.9 MB
