@@ -1,0 +1,13 @@
+*** A new stable version is available. ***
+*** Install the new version using:     ***
+***   'upgradechecker -install'        ***
+xyz_8bit__chromosomes.tif
+TiffDelegateReader initializing xyz_8bit__chromosomes.tif
+Reading IFDs
+Populating metadata
+Checking comment style
+Populating OME metadata
+[Tagged Image File Format] -> i2.ome.tiff [OME-TIFF]
+	Converted 1/1 planes (100%)
+[done]
+0.54s elapsed (3.0+28.0ms per plane, 465ms overhead)

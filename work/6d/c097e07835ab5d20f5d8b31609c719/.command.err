@@ -1,0 +1,8 @@
+Exception in thread "main" loci.formats.FormatException: Invalid TIFF file: mindagap.mouse_heart.wga.tiff
+	at loci.formats.in.MinimalTiffReader.initFile(MinimalTiffReader.java:450)
+	at loci.formats.in.BaseTiffReader.initFile(BaseTiffReader.java:609)
+	at loci.formats.FormatReader.setId(FormatReader.java:1480)
+	at loci.formats.in.TiffDelegateReader.setId(TiffDelegateReader.java:92)
+	at loci.formats.ImageReader.setId(ImageReader.java:864)
+	at loci.formats.tools.ImageConverter.testConvert(ImageConverter.java:562)
+	at loci.formats.tools.ImageConverter.main(ImageConverter.java:1356)

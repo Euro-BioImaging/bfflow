@@ -1,0 +1,3 @@
+Exception in thread "main" loci.formats.FormatException: Invalid Z section '5' (1 Z sections in source file)
+	at loci.formats.tools.ImageConverter.testConvert(ImageConverter.java:604)
+	at loci.formats.tools.ImageConverter.main(ImageConverter.java:1356)
