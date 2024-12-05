@@ -1,5 +1,5 @@
 //
-// Subworkflow with functionality specific to the Euro-BioImaging/bfflow pipeline
+// Subworkflow with functionality specific to the kbestak/demo_workflow pipeline
 //
 
 /*
@@ -8,8 +8,9 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-
-include { completionEmail           } from '../../nf-core/utils_nfcore_pipeline'
+include { UTILS_NFSCHEMA_PLUGIN     } from '../../nf-core/utils_nfschema_plugin'
+include { paramsSummaryMap          } from 'plugin/nf-schema'
+include { samplesheetToList         } from 'plugin/nf-schema'
 include { completionSummary         } from '../../nf-core/utils_nfcore_pipeline'
 include { UTILS_NFCORE_PIPELINE     } from '../../nf-core/utils_nfcore_pipeline'
 include { UTILS_NEXTFLOW_PIPELINE   } from '../../nf-core/utils_nextflow_pipeline'
@@ -45,6 +46,15 @@ workflow PIPELINE_INITIALISATION {
     )
 
     //
+    // Validate parameters and generate parameter summary to stdout
+    //
+    UTILS_NFSCHEMA_PLUGIN (
+        workflow,
+        validate_params,
+        null
+    )
+
+    //
     // Check config provided to the pipeline
     //
     UTILS_NFCORE_PIPELINE (
@@ -56,26 +66,9 @@ workflow PIPELINE_INITIALISATION {
     //
 
     Channel
-        .fromPath(params.input)
-        .splitCsv(header: true, strip: true)
-        .map { row ->
-            [[id:row.sample], row.fastq_1, row.fastq_2]
-        }
-        .map {
-            meta, fastq_1, fastq_2 ->
-                if (!fastq_2) {
-                    return [ meta.id, meta + [ single_end:true ], [ fastq_1 ] ]
-                } else {
-                    return [ meta.id, meta + [ single_end:false ], [ fastq_1, fastq_2 ] ]
-                }
-        }
-        .groupTuple()
+        .fromList(samplesheetToList(params.input, "${projectDir}/assets/schema_input.json"))
         .map { samplesheet ->
             validateInputSamplesheet(samplesheet)
-        }
-        .map {
-            meta, fastqs ->
-                return [ meta, fastqs.flatten() ]
         }
         .set { ch_samplesheet }
 
@@ -93,32 +86,15 @@ workflow PIPELINE_INITIALISATION {
 workflow PIPELINE_COMPLETION {
 
     take:
-    email           //  string: email address
-    email_on_fail   //  string: email address sent on pipeline failure
-    plaintext_email // boolean: Send plain-text email instead of HTML
     outdir          //    path: Path to output directory where results will be published
     monochrome_logs // boolean: Disable ANSI colour codes in log output
-    
-    
 
     main:
-    summary_params = [:]
-
+    summary_params = paramsSummaryMap(workflow, parameters_schema: "nextflow_schema.json")
     //
     // Completion email and summary
     //
     workflow.onComplete {
-        if (email || email_on_fail) {
-            completionEmail(
-                summary_params,
-                email,
-                email_on_fail,
-                plaintext_email,
-                outdir,
-                monochrome_logs,
-                []
-            )
-        }
 
         completionSummary(monochrome_logs)
     }
@@ -138,15 +114,7 @@ workflow PIPELINE_COMPLETION {
 // Validate channels from input samplesheet
 //
 def validateInputSamplesheet(input) {
-    def (metas, fastqs) = input[1..2]
-
-    // Check that multiple runs of the same sample are of the same datatype i.e. single-end / paired-end
-    def endedness_ok = metas.collect{ meta -> meta.single_end }.unique().size == 1
-    if (!endedness_ok) {
-        error("Please check input samplesheet -> Multiple runs of a sample must be of the same datatype i.e. single-end or paired-end: ${metas[0].id}")
-    }
-
-    return [ metas[0], fastqs ]
+    return input
 }
 //
 // Generate methods description for MultiQC
@@ -157,8 +125,6 @@ def toolCitationText() {
     // Uncomment function in methodsDescriptionText to render in MultiQC report
     def citation_text = [
             "Tools used in the workflow included:",
-            
-            
             "."
         ].join(' ').trim()
 
@@ -170,15 +136,13 @@ def toolBibliographyText() {
     // Can use ternary operators to dynamically construct based conditions, e.g. params["run_xyz"] ? "<li>Author (2023) Pub name, Journal, DOI</li>" : "",
     // Uncomment function in methodsDescriptionText to render in MultiQC report
     def reference_text = [
-            
-            
         ].join(' ').trim()
 
     return reference_text
 }
 
 def methodsDescriptionText(mqc_methods_yaml) {
-    // Convert  to a named map so can be used as with familar NXF ${workflow} variable syntax in the MultiQC YML file
+    // Convert  to a named map so can be used as with familiar NXF ${workflow} variable syntax in the MultiQC YML file
     def meta = [:]
     meta.workflow = workflow.toMap()
     meta["manifest_map"] = workflow.manifest.toMap()

@@ -1,9 +1,9 @@
 #!/usr/bin/env nextflow
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Euro-BioImaging/bfflow
+    kbestak/demo_workflow
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    Github : https://github.com/Euro-BioImaging/bfflow
+    Github : https://github.com/kbestak/demo_workflow
 ----------------------------------------------------------------------------------------
 */
 
@@ -12,10 +12,11 @@
     IMPORT FUNCTIONS / MODULES / SUBWORKFLOWS / WORKFLOWS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
+nextflow.enable.moduleBinaries = true
 
-include { BFFLOW  } from './workflows/bfflow'
-include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_bfflow_pipeline'
-include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_bfflow_pipeline'
+include { BATCHCONVERT_TO_OMETIFF  } from './workflows/bftools.nf'
+include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_demo_workflow_pipeline'
+include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_demo_workflow_pipeline'
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     NAMED WORKFLOWS FOR PIPELINE
@@ -25,7 +26,7 @@ include { PIPELINE_COMPLETION     } from './subworkflows/local/utils_nfcore_bffl
 //
 // WORKFLOW: Run main analysis pipeline depending on type of input
 //
-workflow EUROBIOIMAGING_BFFLOW {
+workflow CONVERT_TO_OMETIFF_VIA_SAMPLESHEET {
 
     take:
     samplesheet // channel: samplesheet read in from --input
@@ -35,7 +36,7 @@ workflow EUROBIOIMAGING_BFFLOW {
     //
     // WORKFLOW: Run pipeline
     //
-    BFFLOW (
+    BATCHCONVERT_TO_OMETIFF (
         samplesheet
     )
 }
@@ -63,20 +64,15 @@ workflow {
     //
     // WORKFLOW: Run main workflow
     //
-    EUROBIOIMAGING_BFFLOW (
+    BATCHCONVERT_TO_OMETIFF (
         PIPELINE_INITIALISATION.out.samplesheet
     )
     //
     // SUBWORKFLOW: Run completion tasks
     //
     PIPELINE_COMPLETION (
-        params.email,
-        params.email_on_fail,
-        params.plaintext_email,
         params.outdir,
         params.monochrome_logs,
-        
-        
     )
 }
 
