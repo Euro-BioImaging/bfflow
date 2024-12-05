@@ -12,7 +12,7 @@
     IMPORT FUNCTIONS / MODULES / SUBWORKFLOWS / WORKFLOWS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
-nextflow.enable.moduleBinaries = true
+//nextflow.enable.moduleBinaries = true
 
 include { BATCHCONVERT_TO_OMETIFF  } from './workflows/bftools.nf'
 include { PIPELINE_INITIALISATION } from './subworkflows/local/utils_nfcore_demo_workflow_pipeline'

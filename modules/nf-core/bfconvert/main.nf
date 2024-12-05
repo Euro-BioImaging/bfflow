@@ -1,4 +1,4 @@
-nextflow.enable.moduleBinaries = true
+//nextflow.enable.moduleBinaries = true
 // TODO nf-core: If in doubt look at other nf-core/modules to see how we are doing things! :)
 //               https://github.com/nf-core/modules/tree/master/modules/nf-core/
 //               You can also ask for help via your pull request or on the #modules channel on the nf-core Slack workspace:
