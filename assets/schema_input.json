@@ -18,7 +18,7 @@
                 "format": "file-path",
                 "exists": true,
                 "pattern": "^\\S+$",
-                "errorMessage": "Image path must be provided, cannot contain spaces and must have extension '.tif' or '.tiff'"
+                "errorMessage": "Image path must be provided, cannot contain spaces."
             }
         },
         "required": ["sample", "image"]
